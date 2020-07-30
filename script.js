@@ -42,9 +42,11 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-addOscillator();
-
-drawAxes();
+function begin() {
+    addOscillator();
+    drawAxes();
+    
+}
 
 /**
  * Handles pausing
@@ -585,3 +587,5 @@ function interpolate(a, b, x) {
     var f = (1 - Math.cos(ft)) * 0.5;
     return a * (1 - f) + b * f;
 }
+
+begin();
