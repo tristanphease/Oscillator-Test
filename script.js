@@ -246,46 +246,6 @@ function Oscillator(colour, volume, minFreq, maxFreq, wave) {
     
     calculateHighLowFreqs();
     
-    //noise variables
-    this.setVariables = function() {
-        this.x = 0;
-        this.amp = this.maxFreq-this.minFreq;
-        this.wl = 2000; //wavelength in milliseconds
-        this.a = Math.random();
-        this.b = Math.random();
-        this.lastTime = Date.now();
-    };
-    
-    this.setAudioVariables = function() {
-        this.oscillator = audioCtx.createOscillator();
-        this.oscillator.type = this.wave;
-        this.gainNode = audioCtx.createGain();
-        this.gainNode.gain.setValueAtTime(this.volume/this.volScale, audioCtx.currentTime);
-        this.oscillator.connect(this.gainNode).connect(audioCtx.destination);
-    };
-    
-    this.setVolScale = function() {
-        //tries to normalise the different wave types volumes somewhat
-        //so people don't get their ears hurt :)
-        
-        switch(this.wave) {
-            case "sine":
-                this.volScale = 50;
-                break;
-            case "square":
-                this.volScale = 800;
-                break;
-            case "sawtooth":
-                this.volScale = 400;
-                break;
-            case "triangle":
-                this.volScale = 50;
-                break;
-            default:
-                this.volScale = 50;
-        }
-    }
-    
     this.setVolScale();
     
     if (started) {
@@ -296,54 +256,94 @@ function Oscillator(colour, volume, minFreq, maxFreq, wave) {
         this.setVariables();
         this.oscillator.start();
     }
+}
+
+//noise variables
+Oscillator.prototype.setVariables = function() {
+    this.x = 0;
+    this.amp = this.maxFreq-this.minFreq;
+    this.wl = 2000; //wavelength in milliseconds
+    this.a = Math.random();
+    this.b = Math.random();
+    this.lastTime = Date.now();
+};
+
+Oscillator.prototype.setAudioVariables = function() {
+    this.oscillator = audioCtx.createOscillator();
+    this.oscillator.type = this.wave;
+    this.gainNode = audioCtx.createGain();
+    this.gainNode.gain.setValueAtTime(this.volume/this.volScale, audioCtx.currentTime);
+    this.oscillator.connect(this.gainNode).connect(audioCtx.destination);
+};
+
+Oscillator.prototype.setVolScale = function() {
+    //tries to normalise the different wave types volumes somewhat
+    //so people don't get their ears hurt :)
     
-    this.changeVolume = function(newVolume) {
-        this.volume = newVolume;
-        if (started) {
-            this.gainNode.gain.setValueAtTime(this.volume/this.volScale, audioCtx.currentTime);
-        }
+    switch(this.wave) {
+        case "sine":
+            this.volScale = 50;
+            break;
+        case "square":
+            this.volScale = 800;
+            break;
+        case "sawtooth":
+            this.volScale = 400;
+            break;
+        case "triangle":
+            this.volScale = 50;
+            break;
+        default:
+            this.volScale = 50;
+    }
+}
+
+Oscillator.prototype.changeVolume = function(newVolume) {
+    this.volume = newVolume;
+    if (started) {
+        this.gainNode.gain.setValueAtTime(this.volume/this.volScale, audioCtx.currentTime);
+    }
+}
+
+Oscillator.prototype.changeWave = function(newWave) {
+    this.wave = newWave;
+    this.setVolScale();
+    if (started) {
+        this.oscillator.type = this.wave;
     }
     
-    this.changeWave = function(newWave) {
-        this.wave = newWave;
-        this.setVolScale();
-        if (started) {
-            this.oscillator.type = this.wave;
-        }
-        
-        this.changeVolume(this.volume);
+    this.changeVolume(this.volume);
+}
+
+Oscillator.prototype.setFreq = function() {
+    var freq;
+    if (Date.now() - this.lastTime >= this.wl) {
+        this.a = this.b;
+        this.b = Math.random();
+        freq = this.a * this.amp + this.minFreq;
+        this.lastTime = Date.now();
+    } else {
+        freq = interpolate(this.a, this.b, ((Date.now() - this.lastTime) % this.wl) / this.wl) * this.amp + this.minFreq;
     }
-    
-    this.setFreq = function() {
-        var freq;
-        if (Date.now() - this.lastTime >= this.wl) {
-            this.a = this.b;
-            this.b = Math.random();
-            freq = this.a * this.amp + this.minFreq;
-            this.lastTime = Date.now();
-        } else {
-            freq = interpolate(this.a, this.b, ((Date.now() - this.lastTime) % this.wl) / this.wl) * this.amp + this.minFreq;
-        }
-        this.oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        this.pastFreqs.push([freq, Date.now()-startTime+pauseTime]);
-        return freq;
-    }
-    
-    this.pause = function() {
-        this.paused = true;
-        this.timeGap = Date.now() - this.lastTime;
-        this.gainNode.disconnect(audioCtx.destination);
-    }
-    
-    this.start = function() {
-        if (this.paused) {
-            this.paused = false;
-            this.lastTime = Date.now() - this.timeGap;
-            this.gainNode.connect(audioCtx.destination);
-        } else {
-            this.oscillator.start();
-            this.setVariables();
-        }
+    this.oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    this.pastFreqs.push([freq, Date.now()-startTime+pauseTime]);
+    return freq;
+}
+
+Oscillator.prototype.pause = function() {
+    this.paused = true;
+    this.timeGap = Date.now() - this.lastTime;
+    this.gainNode.disconnect(audioCtx.destination);
+}
+
+Oscillator.prototype.start = function() {
+    if (this.paused) {
+        this.paused = false;
+        this.lastTime = Date.now() - this.timeGap;
+        this.gainNode.connect(audioCtx.destination);
+    } else {
+        this.oscillator.start();
+        this.setVariables();
     }
 }
 
