@@ -258,6 +258,7 @@ function Oscillator(colour, volume, minFreq, maxFreq, wave) {
     }
 }
 
+//Oscillator prototype methods
 //noise variables
 Oscillator.prototype.setVariables = function() {
     this.x = 0;
