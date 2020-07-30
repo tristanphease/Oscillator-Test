@@ -1,0 +1,115 @@
+body {
+    margin: 0;
+    border: 0;
+}
+
+#mainDiv {
+    width: 70vw;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+}
+
+#toolbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 3px black solid;
+    text-align: center;
+}
+
+/* all buttons within toolbar
+stylise later */
+#toolbar button {
+    width: 130px;
+    height: 30px;
+    margin: 5px auto;
+}
+
+#controlDiv {
+    width: 30vw;
+    height: 100vh;
+    position: absolute;
+    right: 0;
+    top: 0;
+    overflow-y: auto;
+    border-left: 3px black solid;
+    display: block;
+}
+
+
+.oscillator-outer {
+    box-sizing: border-box;
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+}
+
+.oscillator {
+    width: 100%;
+    height: 100%;
+    border: 1px black solid;
+}
+
+.oscillator-top {
+    width: 100%;
+    height: 20%;
+    text-align: center;
+    position: relative;
+    font-family: Verdana;
+    font-weight: bold;
+    border-bottom: 1px black solid;
+}
+
+.oscillatorText {
+    font-family: Verdana;
+}
+
+.oscillator-input {
+    width: 40px;
+}
+
+.oscillator-delete-button {
+    position: absolute;
+    height: 100%;
+    right: 0;
+    background-color: #fff;
+    border: none;
+    border-left: 1px solid black;
+}
+.oscillator-delete-button:hover {
+    cursor: pointer;
+}
+
+#addButton-outer {
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    padding-left: 15px;
+    padding-right: 15px;
+    top: 0;
+    text-align: center;
+    bottom: 0;
+    position: -webkit-sticky;
+    position: sticky;
+    
+}
+
+#addButton {
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: 50%;
+    font-size: 30px;
+    font-weight: bold;
+    border: 2px solid black;
+}
+
+#canvas {
+    width: 100%;
+    /* might have to change later if toolbar dimensions are changed*/
+    height: calc(100% - 30px - 2 * 5px - 3px);
+    display: block;
+}
